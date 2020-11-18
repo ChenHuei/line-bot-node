@@ -4,6 +4,8 @@ require('dotenv').config();
 const line = require('@line/bot-sdk');
 const express = require('express');
 
+const { KEYWORD_LIST, KEYWORD_KEYS } = require('./constants/keyword');
+
 // create LINE SDK config from env variables
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
@@ -34,11 +36,22 @@ function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  // create a echoing text message
-  const echo = { type: 'text', text: event.message.text };
+  const text = event.message.text;
+  const echo = {
+    type: 'text',
+    text,
+  };
+
+  const result =
+    Object.keys(KEYWORD_LIST).reduce((acc, keyword) => {
+      if (acc === '' && text.includes(keyword)) {
+        acc = KEYWORD_KEYS[KEYWORD_LIST[keyword]];
+      }
+      return acc;
+    }, '') || echo;
 
   // use reply API
-  return client.replyMessage(event.replyToken, echo);
+  return client.replyMessage(event.replyToken, result);
 }
 
 // listen on port
