@@ -14,7 +14,6 @@ const config = {
 const client = new line.Client(config);
 
 // create Express app
-// about Express itself: https://expressjs.com/
 const app = express();
 
 // register a webhook handler with middleware
